@@ -1,7 +1,5 @@
 const recipeRouter = require("express").Router();
 // Importar todos los routers;
-// Ejemplo: const authRouter = require('./auth.js');
-
 const { getApiInfo, getDBInfo, createRecipe,apiById, dbById, checkAtt, saveAtt, attIdSearch
 } = require("../controllers/recetas.controllers.js");
 

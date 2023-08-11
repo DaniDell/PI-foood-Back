@@ -236,6 +236,6 @@ const attIdSearch = async (arr, str) => {
 module.exports = {
   checkRecipe, getApiInfo, getDBInfo,
   createRecipe, saveDiet,
-  apiById, dbNormalizer,
+  apiById, dbById, dbNormalizer,
   apiByName, checkAtt, saveAtt, attIdSearch
 };
