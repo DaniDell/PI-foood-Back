@@ -1,0 +1,28 @@
+{
+  "id": "a1ffec7e-6803-410d-afde-2a270d6228ed",
+  "name": "Glass of Water",
+  "healthScore": 100,
+  "summary": "The healthiest drink in the world",
+  "instructions": "1.Place the H2O in a clean glass container.\n2.Drink.",
+  "image": "https://elcomercio.pe/resizer/71GZxM-1lq3KdbrFte5OcnxOUCA=/1200x1200/smart/filters:format(jpeg):quality(75)/cloudfront-us-east-1.images.arcpublishing.com/elcomercio/G3EZRZP4EFCCHGILAEGTW2P6B4.jpg",
+  "diets": [
+    "Dairy free",
+    "Lacto ovo vegetarian",
+    "Ketogenic",
+    "Pescatarian",
+    "Whole 30",
+    "Fodmap friendly",
+    "Primal",
+    "Gluten free",
+    "Paleolithic",
+    "Vegan"
+  ],
+  "dishTypes": [
+    "breakfast",
+    "snack",
+    "dessert",
+    "antipasti",
+    "lunch",
+    "dinner"
+  ]
+}
