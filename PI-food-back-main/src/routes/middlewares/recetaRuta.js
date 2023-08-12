@@ -1,5 +1,7 @@
 const recipeRouter = require("express").Router();
 // Importar todos los routers;
+// Ejemplo: const authRouter = require('./auth.js');
+
 const { getApiInfo, getDBInfo, createRecipe,apiById, dbById, checkAtt, saveAtt, attIdSearch
 } = require("../controllers/recetas.controllers.js");
 
@@ -46,13 +48,13 @@ recipeRouter.post("/", async (req, res) => {
       instructions,
       image,
       diets,
-      
     } = req.body;
-    
-    if (!title || !summary) throw Error("Faltan datos importantes");
+
+    if (!title || !summary) {
+      throw new Error("Title and summary are required fields");
+    }
 
     let dietArr = diets.split(",").map((e) => e.trim());
-    
 
     let recipe = { title, healthScore, summary, instructions, image };
 
@@ -60,18 +62,19 @@ recipeRouter.post("/", async (req, res) => {
       let createdRecipe = await createRecipe(recipe);
 
       await saveAtt(dietArr, "diet");
-      
 
       await createdRecipe.addDiets(await attIdSearch(dietArr, "dietId"));
-      
+    } else {
+      throw new Error("Recipe already exists in the database");
+    }
 
-    } else throw Error("La receta ya existe en la base de datos");
-
-    res.status(201).send(`La receta ${title} se ha creado correctamente`);
+    res.status(201).send(`Recipe ${title} has been created successfully`);
   } catch (error) {
+    console.log(error.message);
     res.status(400).send(error.message);
   }
 });
+
 
 module.exports = recipeRouter;
 
