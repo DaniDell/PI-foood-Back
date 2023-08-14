@@ -2,17 +2,10 @@ const axios = require("axios");
 const { Op } = require("sequelize");
 const { Recipe, Diet } = require("../../db");
 const { getPlainTextInstructions, getPlainTextSummary } = require('./normalizationUtils');
-const { API_KEY, API_KEY2, API_KEY3, API_KEY4 } = process.env; // se desestructura la api key desde el .env para obtener el dato
+const { API_KEY } = process.env; // se desestructura la api key desde el .env para obtener el dato
 require("dotenv").config();
 
-const API_KEYS = [API_KEY, API_KEY2, API_KEY3, API_KEY4];
-let currentApiKeyIndex = 0;
 
-const getApiKey = () => {
-  const apiKey = API_KEYS[currentApiKeyIndex];
-  currentApiKeyIndex = (currentApiKeyIndex + 1) % API_KEYS.length; // Cambia a la siguiente clave
-  return apiKey;
-};
 
 const checkRecipe = async (recipe) => {
   const check = await Recipe.findOne({ where: { name: recipe }});
@@ -20,9 +13,10 @@ const checkRecipe = async (recipe) => {
 };
 
 const getApiInfo = async (name) => {
-  const apiKey = getApiKey(); // Obtén la clave de API actual
-  const responseAPI = await axios.get(`https://api.spoonacular.com/recipes/complexSearch?addRecipeInformation=true&number=100&apiKey=${apiKey}`);
-  
+  // Hace una solicitud a la API para obtener información de 100 recetas.
+  const responseAPI = await axios(
+    `https://api.spoonacular.com/recipes/complexSearch?addRecipeInformation=true&number=100&apiKey=${API_KEY}`
+  );
 
   let recipes = responseAPI.data.results.map((recipe) => {
     // Verifica si hay dietas disponibles en la receta y las formatea correctamente.
@@ -112,9 +106,9 @@ const dietIdSearch = async (arr) => {
 
 
 
-const apiByName = async (name) => {
-  const apiKey = getApiKey(); // Obtén la clave de API actual
-  const responseAPI = await axios.get(`https://api.spoonacular.com/recipes/complexSearch?query=${name}&addRecipeInformation=true&number=100&apiKey=${apiKey}`);
+const apiByName = async(name) => {
+  
+  const responseAPI = await axios.get(`https://api.spoonacular.com/recipes/complexSearch?query=${name}&addRecipeInformation=true&number=100&apiKey=${API_KEY}`);
   
   
   const nombre = await responseAPI.map((recipe) => {
@@ -135,9 +129,8 @@ const apiByName = async (name) => {
 
 const apiById = async (id) => {
   try {
-    const apiKey = getApiKey();
     const responseAPI = await axios.get(
-      `https://api.spoonacular.com/recipes/${id}/information?apiKey=${apiKey}`
+      `https://api.spoonacular.com/recipes/${id}/information?apiKey=${API_KEY}`
     );
 
     let recipe = responseAPI.data;
