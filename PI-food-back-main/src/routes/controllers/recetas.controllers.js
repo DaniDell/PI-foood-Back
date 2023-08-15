@@ -13,9 +13,9 @@ const checkRecipe = async (recipe) => {
 };
 
 const getApiInfo = async (name) => {
-  // Hace una solicitud a la API para obtener información de 100 recetas.
+  // Hace una solicitud a la API para obtener información de 100 recetas.///BAJE A 50 PARA NO USAR TODOS LOS PEDIDOS DE LA API
   const responseAPI = await axios(
-    `https://api.spoonacular.com/recipes/complexSearch?addRecipeInformation=true&number=100&apiKey=${API_KEY}`
+    `https://api.spoonacular.com/recipes/complexSearch?addRecipeInformation=true&number=50&apiKey=${API_KEY}`
   );
 
   let recipes = responseAPI.data.results.map((recipe) => {
