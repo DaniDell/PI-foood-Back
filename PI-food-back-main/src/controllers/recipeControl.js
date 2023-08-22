@@ -7,6 +7,7 @@ require("dotenv").config();
 const { API_KEY } = process.env; 
 const API_BASE_URL = "https://api.spoonacular.com";
 
+const Recipes = require('../models/Recipe');
 
 const checkRecipe = async (recipe) => {
   const check = await Recipe.findOne({ where: { name: recipe }});
@@ -228,6 +229,21 @@ const attIdSearch = async (arr, str) => {
     return dietIds;
   }
 };
+
+async function saveRecipesToDB(recipes) {
+  try {
+    // Elimina el campo "id" de cada receta
+    const recipesWithoutId = recipes.map(recipe => {
+      const { id, ...recipeWithoutId } = recipe;
+      return recipeWithoutId;
+    });
+
+    const savedRecipes = await Recipe.create(recipesWithoutId);
+    console.log('Recetas guardadas en la base de datos:', savedRecipes);
+  } catch (error) {
+    console.error('Error al guardar las recetas en la base de datos:', error);
+  }
+}
 
 module.exports = {
   checkRecipe, getApiInfo, getDBInfo,

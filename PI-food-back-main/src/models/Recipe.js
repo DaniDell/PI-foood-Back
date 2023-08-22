@@ -16,7 +16,7 @@ module.exports = (sequelize) => {
       //unique: true,
     },
     summary: {
-      type: DataTypes.STRING,
+      type: DataTypes.TEXT,
       allowNull: false,
     },
     healthScore:{
