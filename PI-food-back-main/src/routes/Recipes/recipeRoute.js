@@ -3,7 +3,7 @@ const recipeRouter = require("express").Router();
 // Ejemplo: const authRouter = require('./auth.js');
 
 const { getApiInfo, getDBInfo, createRecipe,apiById, dbById, checkAtt, saveAtt, attIdSearch
-} = require("../controllers/recetas.controllers.js");
+} = require("../../controllers/recipeControl");
 
 recipeRouter.get("/", async (req, res) => {
 
@@ -48,7 +48,7 @@ recipeRouter.post("/", async (req, res) => {
       instructions,
       image,
       diets,
-    } = req.body;
+          } = req.body;
 
     if (!title || !summary) {
       throw new Error("Title and summary are required fields");

@@ -1,5 +1,5 @@
 const  dietRouter  = require('express').Router();
-const {crearDieta, traerDietas} = require('../controllers/dietas.controllers');
+const {crearDieta, traerDietas} = require('../../controllers/dietControl');
 
 dietRouter.get('/', async(req, res) => {
     try {

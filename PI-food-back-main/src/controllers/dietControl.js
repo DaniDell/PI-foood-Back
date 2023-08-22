@@ -1,6 +1,6 @@
 require("dotenv").config();
 const axios = require("axios");
-const { Diet } = require("../../db");
+const { Diet } = require("../db");
 const { API_KEY } = process.env;
 
 const traerDietaApi = async () => {
@@ -13,6 +13,8 @@ const traerDietaApi = async () => {
     return diets;
   }
   
+
+
 const traerDietaDB = async () => {
     let dbQuery = await Diet.findAll({
       attributes: ["name"],
@@ -23,17 +25,21 @@ const traerDietaDB = async () => {
     return diets;
   }
 
+
+
 const crearDieta = async () => {
 
     let dbDiets = await traerDietaDB();
 
     if (dbDiets.length === 0) { // si no tenemos ninguna dieta, creamos las basicas
         let basicDiets = [
-          { name: "Not defined" }       
+          { name: "Omnivorous" }       
         ];
-        return await Diet.bulkCreate(basicDiets); // es un metodo de sequelize para insertar varios registros en una tabla de base de datos de un solo saque. Mete el array de objetos que declaramos antes en la DB
+        return await Diet.bulkCreate(basicDiets); // es un metodo de sequelize para insertar varios registros en una tabla de base de datos 
       } else return;
 }
+
+
 
 const traerDietas = async () => {
     const apiDiets = await traerDietaApi();

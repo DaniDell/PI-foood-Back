@@ -30,6 +30,7 @@ module.exports = (sequelize) => {
     steps: {
       type: DataTypes.TEXT
     },
+    
   },
   {timestamps: false});
 };

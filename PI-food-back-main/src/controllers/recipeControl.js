@@ -1,10 +1,11 @@
 const axios = require("axios");
 const { Op } = require("sequelize");
-const { Recipe, Diet } = require("../../db");
+const { Recipe, Diet } = require("../db");
 const { getPlainTextInstructions, getPlainTextSummary } = require('./normalizationUtils');
-const { API_KEY } = process.env; // se desestructura la api key desde el .env para obtener el dato
 require("dotenv").config();
 
+const { API_KEY } = process.env; 
+const API_BASE_URL = "https://api.spoonacular.com";
 
 
 const checkRecipe = async (recipe) => {
@@ -13,32 +14,37 @@ const checkRecipe = async (recipe) => {
 };
 
 const getApiInfo = async (name) => {
-  // Hace una solicitud a la API para obtener información de 100 recetas.///BAJE A 20 PARA NO USAR TODOS LOS PEDIDOS DE LA API
-  const responseAPI = await axios(
-    `https://api.spoonacular.com/recipes/complexSearch?addRecipeInformation=true&number=20&apiKey=${API_KEY}`
-  );
+  const responseAPI = await axios.get(`${API_BASE_URL}/recipes/complexSearch?addRecipeInformation=true&number=20&apiKey=${API_KEY}`);
+
 
   let recipes = responseAPI.data.results.map((recipe) => {
-    // Verifica si hay dietas disponibles en la receta y las formatea correctamente.
-    const diets = recipe.diets.length > 1 ? recipe.diets.map(d => `${d[0].toUpperCase()}${d.substring(1)}`) : ["Not defined"];
+    const {
+      id,
+      title,
+      healthScore,
+      summary,
+      analyzedInstructions,
+      image,
+      diets
+    } = recipe;
 
-    // Crea un objeto con datos específicos de la receta.
-    let newRecipe = {
-      id: recipe.id,
-      name: recipe.title,
-      healthScore: recipe.healthScore,
-      summary: getPlainTextSummary(recipe.summary),
-      instructions: recipe.analyzedInstructions,
-      image: recipe.image,
-      diets: diets,
+    const formattedDiets = diets
+      .filter(d => d) // Eliminar dietas vacías
+      .map(d => `${d[0].toUpperCase()}${d.substring(1)}`);
+
+    return {
+      id,
+      name: title,
+      healthScore,
+      summary: getPlainTextSummary(summary),
+      instructions: analyzedInstructions,
+      image,
+      diets: formattedDiets
     };
-    return newRecipe;
   });
 
-  // Filtra las recetas que tengan dietas no nulas y no vacías
-  recipes = recipes.filter((e) => e.diets !== null && e.diets.length > 0 && !e.diets.includes("Not defined"));
+  recipes = recipes.filter((e) => e.diets.length > 0); // Filtrar recetas con dietas no vacías
 
-  // Si se proporciona un nombre, filtra las recetas por el nombre proporcionado.
   if (name) {
     recipes = recipes.filter((e) => e.name.includes(name));
   }
@@ -81,34 +87,21 @@ const createRecipe = async (obj) => {
   return recipe; 
 };
 
-const saveDiet = async () => {
-  for (let diet of arr) {
+const saveDiet = async (arr) => {
+  await Promise.all(arr.map(async (diet) => {
     if (await checkDiet(diet)) {
       await Diet.create({ name: diet });
     }
-  }
-  return;
+  }));
 };
 
-const dietIdSearch = async (arr) => {
-  let dietIds = [];
-  for (let diet of arr) {
-    let id = await Diets.findOne({
-      attributes: ["id"],
-      where: {
-        name: diet,
-      },
-    });
-    dietIds.push(id);
-  }
-  return dietIds;
-};
+
 
 
 
 const apiByName = async(name) => {
   
-  const responseAPI = await axios.get(`https://api.spoonacular.com/recipes/complexSearch?query=${name}&addRecipeInformation=true&number=100&apiKey=${API_KEY}`);
+  const responseAPI = await axios.get(`${API_BASE_URL}/recipes/complexSearch?query=${name}&addRecipeInformation=true&number=100&apiKey=${API_KEY}`);
   
   
   const nombre = await responseAPI.map((recipe) => {
@@ -119,7 +112,7 @@ const apiByName = async(name) => {
       summary: getPlainTextSummary(recipe.summary),
       instructions: getPlainTextInstructions(recipe.analyzedInstructions),
       image: recipe.image,
-      diets: recipe.diets || ["Not defined"],
+      diets: recipe.diets ,
       
     }
   }
@@ -130,7 +123,7 @@ const apiByName = async(name) => {
 const apiById = async (id) => {
   try {
     const responseAPI = await axios.get(
-      `https://api.spoonacular.com/recipes/${id}/information?apiKey=${API_KEY}`
+      `${API_BASE_URL}/recipes/${id}/information?apiKey=${API_KEY}`
     );
 
     let recipe = responseAPI.data;
